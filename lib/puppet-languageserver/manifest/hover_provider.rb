@@ -173,9 +173,8 @@ module PuppetLanguageServer
       end
 
       def self.get_puppet_type_content(item_type)
-        content = "**#{item_type.key}** Resource\n\n"
-        content += "\n\n#{item_type.doc}" unless item_type.doc.nil?
-        content += "\n\n---\n"
+        content = "**#{item_type.key}** Resource\n"
+        content += "#{item_type.doc}\n" unless item_type.doc.nil?
         item_type.attributes.keys.sort.each do |attr|
           content += "* #{attr}\n"
         end
@@ -186,11 +185,12 @@ module PuppetLanguageServer
 
       def self.get_puppet_class_content(item_class)
         content = "**#{item_class.key}** Resource"
-        content += "\n\n#{item_class.doc}" unless item_class.doc.nil?
+        content += "\n\n#{item_class.doc}" if item_class.doc
         unless item_class.parameters.count.zero?
-          content += "\n\n---\n"
-          item_class.parameters.sort.each do |name, _param|
-            content += "* #{name}\n"
+          item_class.parameters.sort.each do |name, param|
+            content += "#{param[:type]} #{name}"
+            content += " - #{param[:doc]}" unless param[:doc].nil? || param[:doc].empty?
+            content += "\n"
           end
         end
         content.strip
